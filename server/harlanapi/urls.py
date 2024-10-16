@@ -17,8 +17,13 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from .views import get_authorization_url, twitter_callback
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("examples/", include("accounts.urls")),
+    path("authorize/", get_authorization_url, name="authorize"),
+    path("callback/", twitter_callback, name="callback"),
+    # Other URL patterns
+    path("", include("accounts.urls")),
+    path("", include("tweet_bot.urls")),
 ]

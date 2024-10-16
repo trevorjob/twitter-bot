@@ -10,11 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from os import getenv
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -26,6 +29,11 @@ SECRET_KEY = "django-insecure-^2n_hu@=xiyvee@7p)l=ew2fs670h_l+_gib5g$++zt^msg5)f
 DEBUG = True
 
 ALLOWED_HOSTS = []
+X_BEARER_TOKEN = getenv("twitter_bearer_token")
+X_ACCESS_TOKEN = getenv("twitter_access_token")
+X_ACCESS_TOKEN_SECRET = getenv("twitter_access_token_secret")
+X_API_KEY = getenv("twitter_api_key")
+X_API_SECRET = getenv("twitter_api_secret")
 
 
 # Application definition
@@ -41,6 +49,8 @@ INSTALLED_APPS = [
     # "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "accounts",
+    "tweet_bot",
+    "follow_bot",
 ]
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
