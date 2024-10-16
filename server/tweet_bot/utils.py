@@ -18,9 +18,9 @@ auth = tweepy.OAuth1UserHandler(api_key, api_secret, access_token, access_token_
 api = tweepy.API(auth)
 
 
-def create_tweet():
+def create_tweet(message: str):
     try:
-        client.create_tweet(text="Hello World")
+        client.create_tweet(text=message)
         return True
     except:
         return None
