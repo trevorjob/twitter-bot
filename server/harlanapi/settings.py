@@ -34,7 +34,20 @@ X_ACCESS_TOKEN = getenv("twitter_access_token")
 X_ACCESS_TOKEN_SECRET = getenv("twitter_access_token_secret")
 X_API_KEY = getenv("twitter_api_key")
 X_API_SECRET = getenv("twitter_api_secret")
-
+X_CLIENT_ID = getenv("twitter_client_id")
+X_CLIENT_SECRET = getenv("twitter_client_secret")
+X_REDIRECT_URI = "http://127.0.0.1:8000/twitter/callback/"  # Adjust as needed
+# X_REDIRECT_URI = (
+# "https://1bf6-102-89-41-23.ngrok-free.app/twitter/callback/"  # Adjust as needed
+# )
+X_SCOPES = [
+    "tweet.write",
+    "follows.write",
+    "offline.access",
+    "users.read",
+    "tweet.read",
+    "follows.read",
+]
 
 # Application definition
 
@@ -51,14 +64,24 @@ INSTALLED_APPS = [
     "accounts",
     "tweet_bot",
     "follow_bot",
+    "drf_yasg",
+    # "oauth2_provider",
+    # "social_django",
+    # "drf_social_oauth2",
 ]
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         # "rest_framework.authentication.BasicAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # "oauth2_provider.contrib.rest_framework.OAuth2Authentication",  # django-oauth-toolkit >= 1.0.0
+        # "drf_social_oauth2.authentication.SocialAuthentication",
     ],
     # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
+# AUTHENTICATION_BACKENDS = (
+#     "drf_social_oauth2.backends.DjangoOAuth2",
+#     "django.contrib.auth.backends.ModelBackend",
+# )
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -82,6 +105,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # "social_django.context_processors.backends",
+                # "social_django.context_processors.login_redirect",
             ],
         },
     },

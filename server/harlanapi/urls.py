@@ -16,15 +16,48 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from .views import TwitterCallbackAPIView, TwitterLoginAPIView
 
 # from .views import get_authorization_url, twitter_callback
+from rest_framework import permissions
+from rest_framework.routers import DefaultRouter
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Snippets API",
+        default_version="v1",
+        description="Test description",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="contact@snippets.local"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+router = DefaultRouter()
 urlpatterns = [
+    path(
+        "swagger<format>/", schema_view.without_ui(cache_timeout=0), name="schema-json"
+    ),
+    path(
+        "swagger/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
+    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path("admin/", admin.site.urls),
     # path("authorize/", get_authorization_url, name="authorize"),
     # path("callback/", twitter_callback, name="callback"),
     # Other URL patterns
     path("", include("accounts.urls")),
     path("", include("tweet_bot.urls")),
+    path("login/twitter/", TwitterLoginAPIView.as_view(), name="twitter_login"),
+    path(
+        "twitter/callback/", TwitterCallbackAPIView.as_view(), name="twitter_callback"
+    ),
+    # re_path(r"^auth/", include("drf_social_oauth2.urls", namespace="drf")),
 ]
