@@ -76,12 +76,13 @@ REST_FRAMEWORK = {
         # "oauth2_provider.contrib.rest_framework.OAuth2Authentication",  # django-oauth-toolkit >= 1.0.0
         # "drf_social_oauth2.authentication.SocialAuthentication",
     ],
-    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
-# AUTHENTICATION_BACKENDS = (
-#     "drf_social_oauth2.backends.DjangoOAuth2",
-#     "django.contrib.auth.backends.ModelBackend",
-# )
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "accounts.backends.UserIDBackend",  # my custom backend
+]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

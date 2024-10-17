@@ -1,5 +1,3 @@
-# Importing Tweepy
-import tweepy
 from harlanapi import settings
 from tweepy.errors import *
 import requests
@@ -12,15 +10,23 @@ bearer_token = settings.X_BEARER_TOKEN
 access_token = settings.X_ACCESS_TOKEN
 access_token_secret = settings.X_ACCESS_TOKEN_SECRET
 
-# Gainaing access and connecting to Twitter API using Credentials
-# client = tweepy.Client(
-#     bearer_token, api_key, api_secret, access_token, access_token_secret
-# )
-# auth = tweepy.OAuth1UserHandler(api_key, api_secret, access_token, access_token_secret)
-# api = tweepy.API(auth)
-
 
 # client.follow_user
 def create_tweet(message: str, bearer_token: str):
     api = Api(bearer_token=bearer_token)
-    ddd = api.create_tweet(text=message)
+    api.create_tweet(text=message)
+
+
+def get_access_token(refresh_token: str):
+    token_url = "https://api.twitter.com/2/oauth2/token"
+    refresh_token = {
+        "refresh_token": refresh_token,
+        "grant_type": "refresh_token",
+    }
+    response = requests.post(
+        token_url,
+        data=refresh_token,
+        auth=(settings.X_CLIENT_ID, settings.X_CLIENT_SECRET),
+    )
+    response.raise_for_status()
+    return response.json()

@@ -17,9 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include, re_path
-from .views import TwitterCallbackAPIView, TwitterLoginAPIView
 
-# from .views import get_authorization_url, twitter_callback
 from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 from drf_yasg.views import get_schema_view
@@ -50,14 +48,9 @@ urlpatterns = [
     ),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path("admin/", admin.site.urls),
-    # path("authorize/", get_authorization_url, name="authorize"),
-    # path("callback/", twitter_callback, name="callback"),
+
     # Other URL patterns
     path("", include("accounts.urls")),
     path("", include("tweet_bot.urls")),
-    path("login/twitter/", TwitterLoginAPIView.as_view(), name="twitter_login"),
-    path(
-        "twitter/callback/", TwitterCallbackAPIView.as_view(), name="twitter_callback"
-    ),
-    # re_path(r"^auth/", include("drf_social_oauth2.urls", namespace="drf")),
+
 ]

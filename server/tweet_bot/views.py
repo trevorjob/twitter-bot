@@ -1,12 +1,14 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, mixins, status
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from .models import Tweets
 from .serializers import TweetsSerializer
-from .utils import create_tweet
+from .utils import create_tweet, get_access_token
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Create your views here.
 
@@ -14,29 +16,25 @@ from .utils import create_tweet
 class TweetView(APIView):
     serializer_class = TweetsSerializer
     query_set = Tweets.objects.all()
-    # permission_classes = [IsAuthenticated]
 
     def get(self, request: Request):
         tweets = Tweets.objects.all()
-
         serializer = self.serializer_class(instance=tweets, many=True)
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: Request):
-        print(request.session.get("x_access_token"))
-        twitter_access_token = request.session.get("x_access_token")
-        if not twitter_access_token:
-            return Response(
-                data={"error": "missing access token"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        user = get_object_or_404(User, pk=request.user)
+        new_toks = get_access_token(refresh_token=user.refresh_token)
+
         data = request.data
         serializer = self.serializer_class(data=data)
 
         if serializer.is_valid():
-            create_tweet(data.get("message"), twitter_access_token)
+            create_tweet(data.get("message"), new_toks["access_token"])
             serializer.save()
+            user.refresh_token = new_toks["refresh_token"]
+            user.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(
@@ -48,7 +46,6 @@ class TweetView(APIView):
 class DeleteTweetView(APIView):
 
     def delete(self, request: Request, tweet_id: str):
-        # return self.destroy(request, pk)
         tweet = get_object_or_404(Tweets, pk=tweet_id)
         tweet.delete()
 

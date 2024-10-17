@@ -21,3 +21,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class RegisterTwitterSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=50)
+    id = serializers.CharField(max_length=50)
+    refresh_token = serializers.CharField(max_length=100)
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "refresh_token"]
+
