@@ -32,3 +32,6 @@ class RegisterTwitterSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "refresh_token"]
 
+
+# class CurrentUserTweetsSerailizer(serializers.ModelField):
+#     # tweets = serializers.()

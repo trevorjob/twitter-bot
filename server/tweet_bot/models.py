@@ -17,7 +17,7 @@ class Tweets(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     post_time = models.DateTimeField()
-    # user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tweets")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tweets")
     status = models.CharField(
         max_length=2, choices=TweetStatus.choices, default=TweetStatus.PENDING
     )

@@ -1,7 +1,8 @@
-from harlanapi import settings
-from tweepy.errors import *
 import requests
+from harlanapi import settings
 from pytwitter import Api
+from pytwitter.error import *
+from .models import Tweets
 
 # Credentials
 api_key = settings.X_API_KEY
@@ -11,10 +12,13 @@ access_token = settings.X_ACCESS_TOKEN
 access_token_secret = settings.X_ACCESS_TOKEN_SECRET
 
 
-# client.follow_user
 def create_tweet(message: str, bearer_token: str):
-    api = Api(bearer_token=bearer_token)
-    api.create_tweet(text=message)
+    try:
+        api = Api(bearer_token=bearer_token)
+        tweet = api.create_tweet(text=message)
+        return tweet
+    except PyTwitterError:
+        return None
 
 
 def get_access_token(refresh_token: str):
@@ -22,6 +26,7 @@ def get_access_token(refresh_token: str):
     refresh_token = {
         "refresh_token": refresh_token,
         "grant_type": "refresh_token",
+        "client_id": settings.X_CLIENT_ID,
     }
     response = requests.post(
         token_url,

@@ -17,8 +17,6 @@ from django.shortcuts import get_object_or_404
 from .serializers import RegisterSerializer, RegisterTwitterSerializer
 from .utils import get_tokens_for_user
 
-# from .utils import *
-
 User = get_user_model()
 
 
@@ -112,6 +110,7 @@ class TwitterLoginAPIView(APIView):
 
         # Store the code_verifier in session
         request.session["code_verifier"] = code_verifier
+        print(request.session.get("code_verifier"))
         try:
             # Construct authorization URL
             authorization_url = (
@@ -152,6 +151,7 @@ class TwitterCallbackAPIView(APIView):
 
         # Retrieve code_verifier from session
         code_verifier = request.session.get("code_verifier")
+        print(code_verifier)
         if not code_verifier:
             return Response(
                 data={"error": "Session expired or code_verifier missing"}, status=400

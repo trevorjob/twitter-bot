@@ -18,20 +18,31 @@ class TweetView(APIView):
     query_set = Tweets.objects.all()
 
     def get(self, request: Request):
-        tweets = Tweets.objects.all()
+        user = get_object_or_404(User, pk=request.user)
+        tweets = user.tweets
+        # tweets = Tweets.objects.all()
         serializer = self.serializer_class(instance=tweets, many=True)
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: Request):
         user = get_object_or_404(User, pk=request.user)
+        print("-------------------------------")
         new_toks = get_access_token(refresh_token=user.refresh_token)
 
         data = request.data
+        data["user"] = user
+        print(data)
         serializer = self.serializer_class(data=data)
-
+        print("--------------------------")
         if serializer.is_valid():
-            create_tweet(data.get("message"), new_toks["access_token"])
+            print("------------------------------")
+            val = create_tweet(data.get("message"), new_toks["access_token"])
+            if val is None:
+                return Response(
+                    data={"message": "tweet already exits, twitter doesnt allow this"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             serializer.save()
             user.refresh_token = new_toks["refresh_token"]
             user.save()
@@ -47,6 +58,10 @@ class DeleteTweetView(APIView):
 
     def delete(self, request: Request, tweet_id: str):
         tweet = get_object_or_404(Tweets, pk=tweet_id)
-        tweet.delete()
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if tweet.status == "PE":
+            tweet.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            data={"message": "tweet has aleady been deleted"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
